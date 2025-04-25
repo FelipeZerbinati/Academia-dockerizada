@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14.1
+    container_name: postgres-academia10
+    environment:
+      POSTGRES_DB: Academia10
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: M1g2m3n44x44
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - academia-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Academia10.Api/Dockerfile
+    container_name: academia10-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DatabasePostGres: Host=db;Port=5432;Database=Academia10;Username=root;Password=M1g2m3n44x44;
+    networks:
+      - academia-network
+
+volumes:
+  postgres_data:
+
+networks:
+  academia-network:
+    driver: bridge
